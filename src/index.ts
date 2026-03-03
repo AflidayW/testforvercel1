@@ -49,7 +49,7 @@ app.post("/videos", (req: Request, res: Response) => {
     id: db.videos.length ? db.videos[db.videos.length - 1].id + 1 : 1,
     title,
     author,
-    canBeDownloaded: true,
+    canBeDownloaded,
     minAgeRestriction: null,
     createdAt: new Date().toISOString(),
     publicationDate: new Date(Date.now() + 86400000).toISOString(),
