@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express'
 import { db } from "./db";
+import { resolve } from 'path';
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -23,7 +24,7 @@ app.get("/videos/:id", (req: Request, res: Response) => {
 app.post("/videos", (req: Request, res: Response) => {
   const { title, author, availableResolutions } = req.body;
   const errors: { field: string, message: string }[] = [];
-
+  const validResolutions = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"];
   if (!title || title.trim() === "" || title.length > 40) {
     errors.push({ field: "title", message: "Invalid title" });
   }
@@ -32,7 +33,7 @@ app.post("/videos", (req: Request, res: Response) => {
     errors.push({ field: "author", message: "Invalid author" });
   }
 
-  if (!availableResolutions || !Array.isArray(availableResolutions) || availableResolutions.length === 0) {
+  if (!availableResolutions || !Array.isArray(availableResolutions) || availableResolutions.length === 0 || !availableResolutions.every((resolut: string) => validResolutions.includes(resolut))) {
     errors.push({ field: "availableResolutions", message: "Invalid resolutions" });
   }
 
@@ -48,7 +49,7 @@ app.post("/videos", (req: Request, res: Response) => {
     canBeDownloaded: true,
     minAgeRestriction: null,
     createdAt: new Date().toISOString(),
-    publicationDate: new Date().toISOString(),
+    publicationDate: new Date(Date.now() + 86400000).toISOString(),
     availableResolutions
   };
 
