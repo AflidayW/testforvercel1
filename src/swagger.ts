@@ -10,6 +10,13 @@ const swaggerOptions = {
       version: "1.0.0",
       description: "hosting API",
     },
+    servers: [
+      { url: "https://testforvercelone.vercel.app/", },
+
+      { url: "http://localhost:5000", }
+
+    ],
+
     paths: {
       "/videos": {
         get: {
