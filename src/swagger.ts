@@ -73,6 +73,13 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 export const setupSwagger = (app: Express) => {
-  app.use("/api", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-};
+  app.use("/api", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    swaggerOptions: {
+      url: "/api/swagger.json"
+    }
+  }));
 
+  app.get("/api/swagger.json", (req, res) => {
+    res.json(swaggerSpec);
+  });
+}
