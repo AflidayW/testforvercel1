@@ -14,6 +14,14 @@ const swaggerOptions = {
       { url: "https://testforvercelone.vercel.app/" },
       { url: "http://localhost:5000" }
     ],
+    components: {
+      securitySchemes: {
+        basicAuth: {
+          type: "http",
+          scheme: "basic"
+        }
+      }
+    },
 
     paths: {
       "/videos": {
@@ -123,6 +131,7 @@ const swaggerOptions = {
         },
         post: {
           summary: "Create a new blog",
+          security: [{ basicAuth: [] }],
           tags: ["Blogs"],
           requestBody: {
             required: true,
@@ -159,6 +168,7 @@ const swaggerOptions = {
         },
         put: {
           summary: "Update blog by ID",
+          security: [{ basicAuth: [] }],
           tags: ["Blogs"],
           parameters: [{ in: "path", name: "id", required: true, schema: { type: "integer" } }],
           requestBody: {
@@ -185,6 +195,7 @@ const swaggerOptions = {
         },
         delete: {
           summary: "Delete blog by ID",
+          security: [{ basicAuth: [] }],
           tags: ["Blogs"],
           parameters: [{ in: "path", name: "id", required: true, schema: { type: "integer" } }],
           responses: {
