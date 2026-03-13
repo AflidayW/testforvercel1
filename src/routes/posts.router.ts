@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { db } from "../db";
 import { superAdminGuardMiddleware } from "../middlewares/auth";
-import { idValidation } from "../middlewares/Idvalidator"
+import { idPostValidator } from "../middlewares/idPostValidator"
 import { postsValidation } from "../middlewares/postsValidator"
 import { inputValidationResultMiddleware } from "../middlewares/MainValidator"
 
@@ -14,7 +14,7 @@ postsRouter
 
     })
 
-    .get("/:id", (req: Request, res: Response) => {
+    .get("/:id", idPostValidator, (req: Request, res: Response) => {
         const post = db.posts.find(id => id.id === +req.params.id);
 
         if (!post) {
@@ -45,7 +45,7 @@ postsRouter
     })
 
 
-    .put("/:id", superAdminGuardMiddleware, idValidation, ...postsValidation, inputValidationResultMiddleware, (req: Request, res: Response) => {
+    .put("/:id", superAdminGuardMiddleware, idPostValidator, ...postsValidation, inputValidationResultMiddleware, (req: Request, res: Response) => {
         const post = db.posts.find(id => id.id === +req.params.id);
         const { title, shortDescription, content, blogId } = req.body;
         if (!post) {
@@ -69,7 +69,7 @@ postsRouter
 
 
 
-    .delete("/:id", superAdminGuardMiddleware, idValidation, inputValidationResultMiddleware, (req: Request, res: Response) => {
+    .delete("/:id", superAdminGuardMiddleware, idPostValidator, inputValidationResultMiddleware, (req: Request, res: Response) => {
         const check = db.posts.find(b => b.id === +req.params.id);
 
         if (!check) {

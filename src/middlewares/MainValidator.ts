@@ -10,7 +10,7 @@ export const inputValidationResultMiddleware = (req: Request, res: Response, nex
     const errors = validationResult(req).formatWith(formatErrors).array({ onlyFirstError: true });
 
     if (errors.length) {
-        return res.status(404).json({ errorMessages: errors });
+        return res.status(400).json({ errorMessages: errors });
     }
 
     next();
