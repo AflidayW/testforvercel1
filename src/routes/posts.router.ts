@@ -37,7 +37,7 @@ postsRouter
             content,
             blogId,
             createdAt: new Date().toISOString(),
-            blogName: db.blogs.find(ojbect => ojbect.id === +blogId)!.name
+            blogName: db.blogs.find(ojbect => ojbect.id === blogId)!.name
         }
 
         db.posts.push(newPost);
@@ -61,7 +61,7 @@ postsRouter
 
         post.blogId = blogId;
 
-        post.blogName = db.blogs.find(ojbect => ojbect.id === +blogId)!.name;
+        post.blogName = db.blogs.find(ojbect => ojbect.id === blogId)!.name;
 
         res.sendStatus(204);
 

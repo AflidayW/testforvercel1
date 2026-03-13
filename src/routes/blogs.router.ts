@@ -14,7 +14,7 @@ blogsRouter
     })
 
     .get("/:id", (req: Request, res: Response) => {
-        const blog = db.blogs.find(b => b.id === +req.params.id);
+        const blog = db.blogs.find(b => b.id === req.params.id);
 
         if (!blog) {
             res.status(404).send({ message: "Blog Not Found" });
@@ -28,12 +28,10 @@ blogsRouter
         const { name, description, websiteUrl } = req.body;
 
         const newBlog = {
-            id: db.blogs.length ? db.blogs[db.blogs.length - 1].id + 1 : 1,
+            id: String(db.blogs.length ? db.blogs[db.blogs.length - 1].id + 1 : 1),
             name,
             description,
-            websiteUrl,
-            createdAt: new Date().toISOString(),
-            isMembership: false
+            websiteUrl
         };
 
         db.blogs.push(newBlog);
@@ -41,7 +39,7 @@ blogsRouter
     })
 
     .put("/:id", superAdminGuardMiddleware, idValidation, ...blogValidation, inputValidationResultMiddleware, (req: Request, res: Response) => {
-        const blog = db.blogs.find(b => b.id === +req.params.id);
+        const blog = db.blogs.find(b => b.id === req.params.id);
         const { name, description, websiteUrl } = req.body;
 
         if (!blog) {
@@ -57,13 +55,13 @@ blogsRouter
     })
 
     .delete("/:id", superAdminGuardMiddleware, (req: Request, res: Response) => {
-        const check = db.blogs.find(b => b.id === +req.params.id);
+        const check = db.blogs.find(b => b.id === req.params.id);
 
         if (!check) {
             res.sendStatus(404);
             return;
         }
 
-        db.blogs = db.blogs.filter(b => b.id !== +req.params.id);
+        db.blogs = db.blogs.filter(b => b.id !== req.params.id);
         res.sendStatus(204);
     });

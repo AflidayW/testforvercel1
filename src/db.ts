@@ -12,12 +12,10 @@ type Video = {
 }
 
 type Blog = {
-    id: number;
+    id: string;
     name: string;
     description: string;
     websiteUrl: string;
-    createdAt: string;
-    isMembership: boolean;
 }
 
 type Posts = {
@@ -43,12 +41,10 @@ export const db: { videos: Video[], blogs: Blog[], posts: Posts[] } = {
     }],
 
     blogs: [{
-        id: 1,
+        id: '1',
         name: "Blog_fack",
         description: "Bukva_fuck",
         websiteUrl: "https://localhost:5000",
-        createdAt: new Date().toISOString(),
-        isMembership: false
     }],
 
     posts: [{
