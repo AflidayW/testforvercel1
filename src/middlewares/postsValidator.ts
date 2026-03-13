@@ -10,6 +10,7 @@ export const postsValidation = [
         .notEmpty().withMessage("Description is required")
         .isLength({ max: 100 }).withMessage("Description must be less than 100 characters"),
     body("content")
+        .trim()
         .notEmpty().withMessage("Content is required")
         .isLength({ max: 1000 }).withMessage("Content must be less than 1000 characters"),
 

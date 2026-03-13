@@ -24,7 +24,6 @@ type Posts = {
     title: string,
     content: string;
     shortDescription: string;
-    createdAt: string;
     blogName: string
 }
 
@@ -53,7 +52,6 @@ export const db: { videos: Video[], blogs: Blog[], posts: Posts[] } = {
         title: "Fuck_Post",
         content: "Fuck_post",
         shortDescription: "Fuck_describtion",
-        createdAt: new Date().toISOString(),
         blogName: "Fuck_Blog"
     }]
 }

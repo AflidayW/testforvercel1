@@ -36,7 +36,6 @@ postsRouter
             shortDescription,
             content,
             blogId,
-            createdAt: new Date().toISOString(),
             blogName: db.blogs.find(ojbect => ojbect.id === blogId)!.name
         }
 
