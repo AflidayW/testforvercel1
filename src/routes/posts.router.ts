@@ -9,13 +9,13 @@ export const postsRouter = Router();
 
 postsRouter
     .get("", async (req: Request, res: Response) => {
-        const posts = await db.collection("Posts").find({}).toArray();
+        const posts = await db.collection("Posts").find({},{ projection: { _id: 0 } }).toArray();
         res.status(200).send(posts);
 
     })
 
     .get("/:id", idPostValidator, async (req: Request, res: Response) => {
-        const post = await db.collection("Posts").findOne({ id: req.params.id });
+        const post = await db.collection("Posts").findOne({ id: req.params.id },{ projection: { _id: 0 } });
 
         if (!post) {
             res.status(404).send({ message: "Post not Found" });
@@ -36,7 +36,7 @@ postsRouter
             shortDescription,
             content,
             blogId,
-            blogName: await db.collection("Blogs").findOne({ id: blogId })
+            blogName: await db.collection("Blogs").findOne({ id: blogId },{ projection: { _id: 0 } })
         }
         await db.collection("Posts").insertOne(newPost);
         res.status(201).send(newPost);
@@ -44,14 +44,14 @@ postsRouter
 
 
     .put("/:id", superAdminGuardMiddleware, idPostValidator, ...postsValidation, inputValidationResultMiddleware, async (req: Request, res: Response) => {
-        const post = await db.collection("Posts").findOne({ id: req.params.id });
+        const post = await db.collection("Posts").findOne({ id: req.params.id },{ projection: { _id: 0 } });
         const { title, shortDescription, content, blogId } = req.body;
         if (!post) {
             res.status(404).send({ message: "Post not Found" });
             return;
         }
 
-        const blog = await db.collection("Blogs").findOne({ id: blogId });
+        const blog = await db.collection("Blogs").findOne({ id: blogId },{ projection: { _id: 0 } });
 
         await db.collection("Posts").updateOne({ id: blogId }, {
             $set: { title, shortDescription, content, blogId, blogName: blog!.name }

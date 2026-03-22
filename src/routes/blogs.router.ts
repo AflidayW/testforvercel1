@@ -10,12 +10,12 @@ export const blogsRouter = Router();
 
 blogsRouter
     .get("", async (req: Request, res: Response) => {
-        const blogs = await db.collection("Blogs").find({}).toArray();
+        const blogs = await db.collection("Blogs").find({}, { projection: { _id: 0 } }).toArray();
         res.status(200).send(blogs)
     })
 
     .get("/:id", idBlogValidation, async (req: Request, res: Response) => {
-        const blog = await db.collection("Blogs").findOne({ id: req.params.id })
+        const blog = await db.collection("Blogs").findOne({ id: req.params.id }, { projection: { _id: 0 } })
 
         if (!blog) {
             res.status(404).send({ message: "Blog Not Found" });
@@ -42,7 +42,7 @@ blogsRouter
     })
 
     .put("/:id", superAdminGuardMiddleware, idBlogValidation, ...blogValidation, inputValidationResultMiddleware, async (req: Request, res: Response) => {
-        const blog = await db.collection("Blogs").findOne({ id: req.params.id })
+        const blog = await db.collection("Blogs").findOne({ id: req.params.id }, { projection: { _id: 0 } })
         const { name, description, websiteUrl } = req.body;
 
         if (!blog) {
