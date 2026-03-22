@@ -8,6 +8,10 @@ import {postsRouter} from "./routes/posts.router"
 
 const app = express()
 const port = process.env.PORT || 5000
+app.use(async (req, res, next) => {
+  await runDb();
+  next();
+});
 app.use(express.json());
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello Samurai')
