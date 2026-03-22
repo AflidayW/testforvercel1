@@ -8,14 +8,14 @@ import { inputValidationResultMiddleware } from "../middlewares/MainValidator"
 export const postsRouter = Router();
 
 postsRouter
-    .get("", (req: Request, res: Response) => {
-
-        res.status(200).send(db.posts);
+    .get("", async (req: Request, res: Response) => {
+        const posts = await db.collection("Posts").find({}).toArray();
+        res.status(200).send(posts);
 
     })
 
-    .get("/:id", idPostValidator, (req: Request, res: Response) => {
-        const post = db.posts.find(id => id.id === req.params.id);
+    .get("/:id", idPostValidator, async (req: Request, res: Response) => {
+        const post = await db.collection("Posts").findOne({ id: req.params.id });
 
         if (!post) {
             res.status(404).send({ message: "Post not Found" });
@@ -27,40 +27,35 @@ postsRouter
     }
 
     )
-    .post("", superAdminGuardMiddleware, ...postsValidation, inputValidationResultMiddleware, (req: Request, res: Response) => {
+    .post("", superAdminGuardMiddleware, ...postsValidation, inputValidationResultMiddleware, async (req: Request, res: Response) => {
         const { title, shortDescription, content, blogId } = req.body;
 
         const newPost = {
-            id: String(db.posts.length ? db.posts[db.posts.length - 1].id + 1 : 1),
+            id: String(Date.now()),
             title,
             shortDescription,
             content,
             blogId,
-            blogName: db.blogs.find(ojbect => ojbect.id === blogId)!.name
+            blogName: await db.collection("Blogs").findOne({ id: blogId })
         }
-
-        db.posts.push(newPost);
+        await db.collection("Posts").insertOne(newPost);
         res.status(201).send(newPost);
     })
 
 
-    .put("/:id", superAdminGuardMiddleware, idPostValidator, ...postsValidation, inputValidationResultMiddleware, (req: Request, res: Response) => {
-        const post = db.posts.find(id => id.id === req.params.id);
+    .put("/:id", superAdminGuardMiddleware, idPostValidator, ...postsValidation, inputValidationResultMiddleware, async (req: Request, res: Response) => {
+        const post = await db.collection("Posts").findOne({ id: req.params.id });
         const { title, shortDescription, content, blogId } = req.body;
         if (!post) {
             res.status(404).send({ message: "Post not Found" });
             return;
         }
 
-        post.title = title;
+        const blog = await db.collection("Blogs").findOne({ id: blogId });
 
-        post.shortDescription = shortDescription;
-
-        post.content = content;
-
-        post.blogId = blogId;
-
-        post.blogName = db.blogs.find(ojbect => ojbect.id === blogId)!.name;
+        await db.collection("Posts").updateOne({ id: blogId }, {
+            $set: { title, shortDescription, content, blogId, blogName: blog!.name }
+        })
 
         res.sendStatus(204);
 
@@ -68,14 +63,12 @@ postsRouter
 
 
 
-    .delete("/:id", superAdminGuardMiddleware, idPostValidator, inputValidationResultMiddleware, (req: Request, res: Response) => {
-        const check = db.posts.find(b => b.id === req.params.id);
+    .delete("/:id", superAdminGuardMiddleware, idPostValidator, inputValidationResultMiddleware, async (req: Request, res: Response) => {
+        const result = await db.collection("Posts").deleteOne({ id: req.params.id });
 
-        if (!check) {
+        if (!result.deletedCount) {
             res.sendStatus(404);
             return;
         }
-
-        db.posts = db.posts.filter(b => b.id !== req.params.id);
         res.sendStatus(204);
     });

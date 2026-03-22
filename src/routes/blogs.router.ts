@@ -9,12 +9,13 @@ export const blogsRouter = Router();
 
 
 blogsRouter
-    .get("", (req: Request, res: Response) => {
-        res.status(200).send(db.blogs)
+    .get("", async (req: Request, res: Response) => {
+        const blogs = await db.collection("blogs").find({}).toArray();
+        res.status(200).send(blogs)
     })
 
-    .get("/:id", idBlogValidation, (req: Request, res: Response) => {
-        const blog = db.blogs.find(b => b.id === req.params.id);
+    .get("/:id", idBlogValidation, async (req: Request, res: Response) => {
+        const blog = await db.collection("blogs").findOne({ id: req.params.id })
 
         if (!blog) {
             res.status(404).send({ message: "Blog Not Found" });
@@ -24,22 +25,24 @@ blogsRouter
         res.status(200).send(blog);
     })
 
-    .post("", superAdminGuardMiddleware, ...blogValidation, inputValidationResultMiddleware, (req: Request, res: Response) => {
+    .post("", superAdminGuardMiddleware, ...blogValidation, inputValidationResultMiddleware, async (req: Request, res: Response) => {
         const { name, description, websiteUrl } = req.body;
 
         const newBlog = {
-            id: String(db.blogs.length ? db.blogs[db.blogs.length - 1].id + 1 : 1),
+            id: String(Date.now()),
             name,
             description,
-            websiteUrl
+            websiteUrl,
+            createdAt: new Date().toISOString(),
+            isMembership: false
         };
 
-        db.blogs.push(newBlog);
+        await db.collection("blogs").insertOne(newBlog)
         res.status(201).send(newBlog);
     })
 
-    .put("/:id", superAdminGuardMiddleware, idBlogValidation, ...blogValidation, inputValidationResultMiddleware, (req: Request, res: Response) => {
-        const blog = db.blogs.find(b => b.id === req.params.id);
+    .put("/:id", superAdminGuardMiddleware, idBlogValidation, ...blogValidation, inputValidationResultMiddleware, async (req: Request, res: Response) => {
+        const blog = await db.collection("blogs").findOne({ id: req.params.id })
         const { name, description, websiteUrl } = req.body;
 
         if (!blog) {
@@ -47,21 +50,19 @@ blogsRouter
             return;
         }
 
-        blog.name = name;
-        blog.description = description;
-        blog.websiteUrl = websiteUrl;
+        await db.collection("blogs").updateOne({ id: req.params.id }, {
+            $set: { name, description, websiteUrl }
+        })
 
         res.sendStatus(204);
     })
 
-    .delete("/:id", superAdminGuardMiddleware, idBlogValidation, (req: Request, res: Response) => {
-        const check = db.blogs.find(b => b.id === req.params.id);
+    .delete("/:id", superAdminGuardMiddleware, idBlogValidation, async (req: Request, res: Response) => {
+        const check = await db.collection("blogs").deleteOne({ id: req.params.id });
 
-        if (!check) {
+        if (!check.deletedCount) {
             res.sendStatus(404);
             return;
         }
-
-        db.blogs = db.blogs.filter(b => b.id !== req.params.id);
         res.sendStatus(204);
-    });
+    })

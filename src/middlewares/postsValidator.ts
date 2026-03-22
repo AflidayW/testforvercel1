@@ -16,8 +16,8 @@ export const postsValidation = [
 
     body('blogId')
         .notEmpty().withMessage("Content is required")
-        .custom(id => {
-            const blog = db.blogs.find(ojbect => ojbect.id === id);
+        .custom(id => async () => {
+            const blog = await db.collection("Blogs").findOne({ id: id });
 
             if (!blog) throw new Error("Blog not found")
             return true
