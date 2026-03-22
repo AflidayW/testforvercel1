@@ -24,9 +24,9 @@ app.use("/posts", postsRouter)
 // 
 
 app.delete("/testing/all-data", async (req: Request, res: Response) => {
-  await db.collection("videos").deleteMany({});
-  await db.collection("posts").deleteMany({});
-  await db.collection("blogs").deleteMany({})
+  // await db.collection("videos").deleteMany({});
+  await db.collection("Posts").deleteMany({});
+  await db.collection("Blogs").deleteMany({})
   res.sendStatus(204);
 });
 setupSwagger(app);
