@@ -10,12 +10,12 @@ export const blogsRouter = Router();
 
 blogsRouter
     .get("", async (req: Request, res: Response) => {
-        const blogs = await db.collection("blogs").find({}).toArray();
+        const blogs = await db.collection("Blogs").find({}).toArray();
         res.status(200).send(blogs)
     })
 
     .get("/:id", idBlogValidation, async (req: Request, res: Response) => {
-        const blog = await db.collection("blogs").findOne({ id: req.params.id })
+        const blog = await db.collection("Blogs").findOne({ id: req.params.id })
 
         if (!blog) {
             res.status(404).send({ message: "Blog Not Found" });
@@ -37,12 +37,12 @@ blogsRouter
             isMembership: false
         };
 
-        await db.collection("blogs").insertOne(newBlog)
+        await db.collection("Blogs").insertOne(newBlog)
         res.status(201).send(newBlog);
     })
 
     .put("/:id", superAdminGuardMiddleware, idBlogValidation, ...blogValidation, inputValidationResultMiddleware, async (req: Request, res: Response) => {
-        const blog = await db.collection("blogs").findOne({ id: req.params.id })
+        const blog = await db.collection("Blogs").findOne({ id: req.params.id })
         const { name, description, websiteUrl } = req.body;
 
         if (!blog) {
@@ -50,7 +50,7 @@ blogsRouter
             return;
         }
 
-        await db.collection("blogs").updateOne({ id: req.params.id }, {
+        await db.collection("Blogs").updateOne({ id: req.params.id }, {
             $set: { name, description, websiteUrl }
         })
 
@@ -58,7 +58,7 @@ blogsRouter
     })
 
     .delete("/:id", superAdminGuardMiddleware, idBlogValidation, async (req: Request, res: Response) => {
-        const check = await db.collection("blogs").deleteOne({ id: req.params.id });
+        const check = await db.collection("Blogs").deleteOne({ id: req.params.id });
 
         if (!check.deletedCount) {
             res.sendStatus(404);
