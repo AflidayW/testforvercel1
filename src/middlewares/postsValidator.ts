@@ -5,7 +5,7 @@ export const postsValidation = [
     body("title")
         .trim()
         .notEmpty().withMessage("Title is required")
-        .isLength({ max: 30 }).withMessage("Name must be less than 15 characters"),
+        .isLength({ max: 30 }).withMessage("Title must be less than 30 characters"),
     body("shortDescription")
         .notEmpty().withMessage("Description is required")
         .isLength({ max: 100 }).withMessage("Description must be less than 100 characters"),
@@ -15,8 +15,9 @@ export const postsValidation = [
         .isLength({ max: 1000 }).withMessage("Content must be less than 1000 characters"),
 
     body('blogId')
-        .notEmpty().withMessage("Content is required")
-        .custom(id => async () => {
+        .if((value, { req }) => !req.params?.id)
+        .notEmpty().withMessage("BlogId is required")
+        .custom(async (id) => {
             const blog = await db.collection("Blogs").findOne({ id: id });
 
             if (!blog) throw new Error("Blog not found")

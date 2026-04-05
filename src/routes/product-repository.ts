@@ -21,17 +21,17 @@ export type Post = {
 
 export const productRepository = {
 
-    async findAllBlogs(req: Request): Promise<{ FoundedBlogs: Blog[], totalCount: number, pagesCount: number, page: number, PageSize: number }> {
+    async findAllBlogs(req: Request): Promise<{ items: Blog[], totalCount: number, pagesCount: number, page: number, PageSize: number }> {
         const PageSize = Number(req.query.pageSize || 10);
         const PageNumber = Number(req.query.pageNumber || 1);
 
 
-        const FoundedBlogs = await db.collection<Blog>("Blogs").find({}, { projection: { _id: 0 } }).skip((PageNumber - 1) * PageSize).limit(PageSize).toArray();
+        const items = await db.collection<Blog>("Blogs").find({}, { projection: { _id: 0 } }).skip((PageNumber - 1) * PageSize).limit(PageSize).toArray();
 
         const totalCount = await db.collection<Blog>("Blogs").countDocuments({})
 
         return {
-            FoundedBlogs,
+            items,
             totalCount,
             pagesCount: Math.ceil(totalCount / PageSize),
             page: PageNumber,
@@ -112,17 +112,17 @@ export const productRepository = {
 
     },
 
-    async GetPostsFromBlog(req: Request): Promise<{ lists_of_Posts: Post[], totalCount: number, pagesCount: number, page: number, PageSize: number }> {
+    async GetPostsFromBlog(req: Request): Promise<{ lists_of_Posts: Post[], totalCount: number, pagesCount: number, page: number, pageSize: number }> {
         const blogId = req.params.id;
 
-        const PageSize = Number(req.query.pageSize || 10);
+        const pageSize = Number(req.query.pageSize || 10);
 
         const PageNumber = Number(req.query.pageNumber || 1);
 
-        const lists_of_Posts = await db.collection<Post>("Posts").find({ blogId: blogId }, { projection: { _id: 0 } }).skip((PageNumber - 1) * PageSize).limit(PageSize).toArray()
+        const lists_of_Posts = await db.collection<Post>("Posts").find({ blogId: blogId }, { projection: { _id: 0 } }).skip((PageNumber - 1) * pageSize).limit(pageSize).toArray()
 
         const totalCount = await db.collection<Post>("Posts").countDocuments({})
-        return { lists_of_Posts, totalCount, pagesCount: Math.ceil(totalCount / PageSize), page: PageNumber, PageSize };
+        return { lists_of_Posts, totalCount, pagesCount: Math.ceil(totalCount / pageSize), page: PageNumber, pageSize };
 
     }
 }
