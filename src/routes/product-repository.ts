@@ -122,7 +122,7 @@ export const productRepository = {
 
         const lists_of_Posts = await db.collection<Post>("Posts").find({ blogId: blogId }, { projection: { _id: 0 } }).skip((PageNumber - 1) * pageSize).limit(pageSize).toArray()
 
-        const totalCount = await db.collection<Post>("Posts").countDocuments({})
+        const totalCount = await db.collection<Post>("Posts").countDocuments({blogId})
         return { lists_of_Posts, totalCount, pagesCount: Math.ceil(totalCount / pageSize), page: PageNumber, pageSize };
 
     }
