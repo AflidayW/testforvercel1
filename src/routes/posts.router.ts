@@ -24,7 +24,7 @@ postsRouter
     })
 
     .get("/:id", idPostValidator, inputValidationResultMiddleware, async (req: Request, res: Response) => {
-        const post = await db.collection("Posts").findOne({ id: req.params.id });
+        const post = await db.collection("Posts").findOne({ id: req.params.id }, { projection: { _id: 0 } });
 
         if (!post) {
             res.status(404).send({ message: "Post not Found" });

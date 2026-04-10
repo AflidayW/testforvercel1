@@ -21,21 +21,21 @@ export type Post = {
 
 export const productRepository = {
 
-    async findAllBlogs(req: Request): Promise<{ items: Blog[], totalCount: number, pagesCount: number, page: number, PageSize: number }> {
-        const PageSize = Number(req.query.pageSize || 10);
-        const PageNumber = Number(req.query.pageNumber || 1);
+    async findAllBlogs(req: Request): Promise<{ items: Blog[], totalCount: number, pagesCount: number, page: number, pageSize: number }> {
+        const pageSize = Number(req.query.pageSize || 10);
+        const pageNumber = Number(req.query.pageNumber || 1);
 
 
-        const items = await db.collection<Blog>("Blogs").find({}, { projection: { _id: 0 } }).skip((PageNumber - 1) * PageSize).limit(PageSize).toArray();
+        const items = await db.collection<Blog>("Blogs").find({}, { projection: { _id: 0 } }).skip((pageNumber - 1) * pageSize).limit(pageSize).toArray();
 
         const totalCount = await db.collection<Blog>("Blogs").countDocuments({})
 
         return {
             items,
             totalCount,
-            pagesCount: Math.ceil(totalCount / PageSize),
-            page: PageNumber,
-            PageSize
+            pagesCount: Math.ceil(totalCount / pageSize),
+            page: pageNumber,
+            pageSize
         }
     },
 
@@ -108,8 +108,9 @@ export const productRepository = {
         };
 
 
-        await db.collection<Post>("Posts").insertOne({ ...newPost })
-        return newPost;
+        await db.collection<Post>("Posts").insertOne(newPost)
+        const { _id, ...newPost_withoutId } = newPost as any;
+        return newPost_withoutId;
 
     },
 
@@ -118,12 +119,12 @@ export const productRepository = {
 
         const pageSize = Number(req.query.pageSize || 10);
 
-        const PageNumber = Number(req.query.pageNumber || 1);
+        const pageNumber = Number(req.query.pageNumber || 1);
 
-        const lists_of_Posts = await db.collection<Post>("Posts").find({ blogId: blogId }, { projection: { _id: 0 } }).skip((PageNumber - 1) * pageSize).limit(pageSize).toArray()
+        const lists_of_Posts = await db.collection<Post>("Posts").find({ blogId: blogId }, { projection: { _id: 0 } }).skip((pageNumber - 1) * pageSize).limit(pageSize).toArray()
 
         const totalCount = await db.collection<Post>("Posts").countDocuments({blogId})
-        return { lists_of_Posts, totalCount, pagesCount: Math.ceil(totalCount / pageSize), page: PageNumber, pageSize };
+        return {lists_of_Posts, totalCount, pagesCount: Math.ceil(totalCount / pageSize), page: pageNumber, pageSize };
 
     }
 }
