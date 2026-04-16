@@ -25,7 +25,7 @@ export const productRepository = {
         const pageSize = Number(req.query.pageSize || 10);
         const pageNumber = Number(req.query.pageNumber || 1);
 
-        const sortBy = req.query.sortBy ? req.query.sortBy.toString() : "created_At";
+        const sortBy = req.query.sortBy ? req.query.sortBy.toString() : "createdAt";
         const sortDirection = req.query.sortDirection === "desc" ? -1 : 1;
 
         const items = await db.collection<Blog>("Blogs").find({}, { projection: { _id: 0 } }).sort({ [sortBy]: sortDirection }).skip((pageNumber - 1) * pageSize).limit(pageSize).toArray();
@@ -40,6 +40,26 @@ export const productRepository = {
             pageSize
         }
     },
+    async findAllPosts(req: Request): Promise<{ items: Post[], totalCount: number, pagesCount: number, page: number, pageSize: number }> {
+        const pageSize = Number(req.query.pageSize || 10);
+        const pageNumber = Number(req.query.pageNumber || 1);
+
+        const sortBy = req.query.sortBy ? req.query.sortBy.toString() : "createdAt";
+        const sortDirection = req.query.sortDirection === "desc" ? -1 : 1;
+
+        const items = await db.collection<Post>("Posts").find({}, { projection: { _id: 0 } }).sort({ [sortBy]: sortDirection }).skip((pageNumber - 1) * pageSize).limit(pageSize).toArray();
+
+        const totalCount = await db.collection<Post>("Posts").countDocuments({})
+
+        return {
+            items,
+            totalCount,
+            pagesCount: Math.ceil(totalCount / pageSize),
+            page: pageNumber,
+            pageSize
+        }
+    }
+    ,
 
     async findOneBlog(req: Request): Promise<Blog | null> {
         const FoundedBlog = await db.collection<Blog>("Blogs").findOne({ id: req.params.id }, { projection: { _id: 0 } })

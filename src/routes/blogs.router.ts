@@ -14,7 +14,7 @@ export const blogsRouter = Router();
 
 blogsRouter
     .get("", PaginationValidation(), ...sortValidator, inputValidationResultMiddleware, async (req: Request, res: Response) => {
-        const blogs = await productRepository.findAllBlogs(req);;
+        const blogs = await productRepository.findAllBlogs(req);
         res.status(200).send(blogs)
     })
 

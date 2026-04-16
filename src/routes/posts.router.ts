@@ -15,14 +15,7 @@ export const postsRouter = Router();
 
 postsRouter
     .get("", PaginationValidation(), ...sortValidator, inputValidationResultMiddleware, async (req: Request, res: Response) => {
-        const PageSize = Number(req.query.pageSize || 10);
-
-        const PageNumber = Number(req.query.pageNumber || 1);
-
-        const sortBy = req.query.sortBy ? req.query.sortBy.toString() : "created_At";
-        const sortDirection = req.query.sortDirection === "desk" ? -1 : 1;
-
-        const posts = await db.collection("Posts").find({}, { projection: { _id: 0 } }).sort({ [sortBy]: sortDirection }).skip((PageNumber - 1) * PageSize).limit(PageSize).toArray();
+        const posts = productRepository.findAllPosts(req);
         res.status(200).send(posts);
 
     })
