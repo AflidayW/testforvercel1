@@ -1,5 +1,5 @@
 export enum PostSortFieldEnum {
-    CREATED_AT = 'created_At',
+    CREATED_AT = 'createdAt',
     NAME = 'name',
 }
 

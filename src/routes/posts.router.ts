@@ -15,7 +15,7 @@ export const postsRouter = Router();
 
 postsRouter
     .get("", PaginationValidation(), ...sortValidator, inputValidationResultMiddleware, async (req: Request, res: Response) => {
-        const posts = productRepository.findAllPosts(req);
+        const posts = await productRepository.findAllPosts(req);
         res.status(200).send(posts);
 
     })
