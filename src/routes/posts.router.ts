@@ -66,8 +66,13 @@ postsRouter
 
         const blog = await db.collection("Blogs").findOne({ id: blogId });
 
+            if (!blog) {
+                res.status(400).send({ message: "Blog not Found" })
+                return;
+            }
+
         await db.collection("Posts").updateOne({ id: req.params.id }, {
-            $set: { _id: blog?._id, title, shortDescription, content, blogId, blogName: blog!.name }
+            $set: { title, shortDescription, content, blogId, blogName: blog.name }
         })
 
         res.sendStatus(204);
