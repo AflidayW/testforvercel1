@@ -35,20 +35,20 @@ export const productRepository = {
             filter.name = { $regex: searchNameTerm, $options: "i" }
         }
         const sortBy = req.query.sortBy ? req.query.sortBy.toString() : "createdAt";
-        const sortDirection = req.query.sortDirection === "desc" ? -1 : 1;
+        const sortDirection = req.query.sortDirection === "asc" ? 1 : -1;
 
 
 
         const items = await db.collection<Blog>("Blogs").find(filter, { projection: { _id: 0 } }).sort({ [sortBy]: sortDirection }).skip((pageNumber - 1) * pageSize).limit(pageSize).toArray();
 
-        const totalCount = await db.collection<Blog>("Blogs").countDocuments({})
+        const totalCount = await db.collection<Blog>("Blogs").countDocuments(filter)
 
         return {
-            items,
-            totalCount,
             pagesCount: Math.ceil(totalCount / pageSize),
             page: pageNumber,
-            pageSize
+            totalCount,
+            pageSize,
+            items
         }
     },
     async findAllPosts(req: Request): Promise<{ items: Post[], totalCount: number, pagesCount: number, page: number, pageSize: number }> {
@@ -60,7 +60,7 @@ export const productRepository = {
         const filter: Filter<Post> = {};
 
         const sortBy = req.query.sortBy ? req.query.sortBy.toString() : "createdAt";
-        const sortDirection = req.query.sortDirection === "desc" ? -1 : 1;
+        const sortDirection = req.query.sortDirection === "asc" ? 1 : -1;
 
 
         if (searchNameTerm) {
@@ -69,7 +69,7 @@ export const productRepository = {
 
         const items = await db.collection<Post>("Posts").find(filter, { projection: { _id: 0 } }).sort({ [sortBy]: sortDirection }).skip((pageNumber - 1) * pageSize).limit(pageSize).toArray();
 
-        const totalCount = await db.collection<Post>("Posts").countDocuments({})
+        const totalCount = await db.collection<Post>("Posts").countDocuments(filter)
 
         return {
             items,
@@ -164,7 +164,7 @@ export const productRepository = {
             : null;
 
         const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt';
-        const sortDirection = req.query.sortDirection === 'desc' ? -1 : 1; // 'desc' -> -1, 'asc' -> 1
+        const sortDirection = req.query.sortDirection === "asc" ? 1 : -1;
 
         const filter: Filter<Post> = { blogId: blogId };
 
@@ -176,7 +176,7 @@ export const productRepository = {
 
         const items = await db.collection<Post>("Posts").find(filter, { projection: { _id: 0 } }).sort({ [sortBy]: sortDirection }).skip((pageNumber - 1) * pageSize).limit(pageSize).toArray()
 
-        const totalCount = await db.collection<Post>("Posts").countDocuments({blogId})
+        const totalCount = await db.collection<Post>("Posts").countDocuments(filter)
         return { items, totalCount, pagesCount: Math.ceil(totalCount / pageSize), page: pageNumber, pageSize };
 
     }
