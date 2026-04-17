@@ -11,6 +11,7 @@ export const sortValidator = [
         .default(PostDirectionEnum.DESC)
         .isIn(Object.values(PostDirectionEnum))
         .withMessage(`Allowed sort fields: ${Object.values(PostDirectionEnum).join(', ')}`)
+    
 
 ]
 
