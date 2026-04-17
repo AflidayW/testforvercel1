@@ -6,12 +6,12 @@ export const sortValidator = [
     query('sortBy')
         .optional()
         .default(PostSortFieldEnum.CREATED_AT)
-        // .isIn(Object.values(PostSortFieldEnum))
+        .isIn(Object.values(PostSortFieldEnum))
         .withMessage(`Allowed sort fields: ${Object.values(PostSortFieldEnum).join(', ')}`),
     query("sortDirection")
         .optional()
         .default(PostDirectionEnum.DESC)
-        // .isIn(Object.values(PostDirectionEnum))
+        .isIn(Object.values(PostDirectionEnum))
         .withMessage(`Allowed sort fields: ${Object.values(PostDirectionEnum).join(', ')}`),
     query('pageNumber')
         .optional()
